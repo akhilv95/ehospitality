@@ -76,8 +76,6 @@ export const patientAPI = {
 
 // Doctor API
 export const doctorAPI = {
-  createDoctor: (data) =>
-    api.post("/doctors/admin/create/", data),
   getAll: () => api.get("/doctors/"),
   getAll: (params) => api.get('/doctors/', { params }),
   getById: (id) => api.get(`/doctors/${id}/`),
