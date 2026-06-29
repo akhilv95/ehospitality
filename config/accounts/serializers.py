@@ -98,6 +98,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             patient.insurance_provider = patient_data.get("insurance_provider", "")
             patient.insurance_policy_number = patient_data.get("insurance_policy_number", "")
             patient.save()
+            return user
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
