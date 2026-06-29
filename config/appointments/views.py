@@ -13,6 +13,8 @@ from .serializers import (
 )
 from billing.models import Invoice, InvoiceItem
 from datetime import timedelta
+from django.utils import timezone
+
 
 
 class AppointmentListView(generics.ListAPIView):
@@ -112,17 +114,23 @@ def confirm_appointment(request, pk):
 
 @api_view(['POST'])
 @permission_classes([IsDoctorOrAdmin])
+@api_view(['POST'])
+@permission_classes([IsDoctorOrAdmin])
 def complete_appointment(request, pk):
     """Mark an appointment as completed."""
     try:
         appointment = Appointment.objects.get(pk=pk)
 
-        if appointment.status not in ['scheduled', 'confirmed']:
+        if appointment.status not in [
+            Appointment.Status.SCHEDULED,
+            Appointment.Status.CONFIRMED,
+        ]:
             return Response(
-                {'error': 'Cannot complete this appointment'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Cannot complete this appointment"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Complete appointment
         appointment.status = Appointment.Status.COMPLETED
 
         notes = request.data.get("notes", "")
@@ -131,11 +139,7 @@ def complete_appointment(request, pk):
 
         appointment.save()
 
-        print("=" * 50)
-        print("Doctor:", appointment.doctor.user.get_full_name())
-        print("Doctor Fee:", appointment.doctor.consultation_fee)
-
-        # Create invoice automatically
+        # Create invoice only if one doesn't already exist
         invoice, created = Invoice.objects.get_or_create(
             appointment=appointment,
             defaults={
@@ -143,14 +147,11 @@ def complete_appointment(request, pk):
                 "subtotal": appointment.doctor.consultation_fee,
                 "tax": 0,
                 "discount": 0,
-                "due_date": appointment.date + timedelta(days=7),
-                "notes": "Doctor Consultation Fee",
+                "amount_paid": 0,
+                "due_date": timezone.now().date() + timedelta(days=7),
             },
         )
 
-        print("Invoice subtotal:", invoice.subtotal)
-
-        # Create invoice item only once
         if created:
             InvoiceItem.objects.create(
                 invoice=invoice,
@@ -159,9 +160,13 @@ def complete_appointment(request, pk):
                 unit_price=appointment.doctor.consultation_fee,
             )
 
+            # Calculate invoice total
+            invoice.save()
+
         return Response({
             "message": "Appointment completed successfully",
             "invoice": invoice.invoice_number,
+            "amount": invoice.total,
         })
 
     except Appointment.DoesNotExist:
