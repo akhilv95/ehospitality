@@ -112,8 +112,7 @@ def confirm_appointment(request, pk):
     except Appointment.DoesNotExist:
         return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-@permission_classes([IsDoctorOrAdmin])
+
 @api_view(['POST'])
 @permission_classes([IsDoctorOrAdmin])
 def complete_appointment(request, pk):

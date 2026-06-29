@@ -82,29 +82,27 @@ const PatientBilling = () => {
         ) : (
           invoices.map((invoice) => (
             <div key={invoice.id} className="card">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <p className="text-gray-900">
-                    <span className="font-semibold">Invoice:</span> {invoice.invoice_number}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Total:</span> {invoice.total}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Paid:</span> {invoice.amount_paid}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Balance:</span> {invoice.balance_due}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Due Date:</span> {invoice.due_date}
-                  </p>
-                </div>
+              <div className="flex justify-between items-start border-b pb-4">
+    <div>
+        <h3 className="text-lg font-bold text-blue-700">
+            {invoice.invoice_number}
+        </h3>
 
-                <span className={getStatusBadge(invoice.status)}>
-                  {invoice.status_display}
-                </span>
-              </div>
+        <p className="text-gray-500 text-sm">
+            Due Date: {invoice.due_date}
+        </p>
+
+        {invoice.doctor_name && (
+            <p className="text-gray-700 mt-1">
+                Doctor: <span className="font-medium">{invoice.doctor_name}</span>
+            </p>
+        )}
+    </div>
+
+    <span className={getStatusBadge(invoice.status)}>
+        {invoice.status_display}
+    </span>
+</div>
 
               {invoice.items?.length > 0 && (
                 <div className="mt-4">
