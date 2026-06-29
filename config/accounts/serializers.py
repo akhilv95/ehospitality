@@ -88,12 +88,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
 
         if user.role == "patient":
-            Patient.objects.create(
-                user=user,
-                **patient_data
-            )
-
-        return user
+            patient = user.patient_profile
+            for key, value in patient_data.items():
+                setattr(patient, key, value)
+                patient.save()
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
