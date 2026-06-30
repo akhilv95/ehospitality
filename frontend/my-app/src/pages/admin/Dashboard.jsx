@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+
+import StatsCards from "../../components/dashboard/StatsCards";
 import RevenueChart from "../../components/dashboard/RevenueChart";
 import AppointmentChart from "../../components/dashboard/AppointmentChart";
 import RecentAppointments from "../../components/dashboard/RecentAppointments";
 import RecentPatients from "../../components/dashboard/RecentPatients";
 import RecentPayments from "../../components/dashboard/RecentPayments";
 import NotificationPanel from "../../components/dashboard/NotificationPanel";
-import StatsCards from "../../components/dashboard/StatsCards";
 
 import {
   doctorAPI,
@@ -16,10 +17,6 @@ import {
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [appointments, setAppointments] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [patients,setPatients]=useState([]);
-  const [payments,setPayments]=useState([]);
 
   const [stats, setStats] = useState({
     doctors: 0,
@@ -28,6 +25,11 @@ const Dashboard = () => {
     revenue: 0,
   });
 
+  const [appointments, setAppointments] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -35,123 +37,112 @@ const Dashboard = () => {
   const loadDashboard = async () => {
     try {
       const [
-        doctors,
-        patients,
-        appointments,
-        invoices,
+        doctorRes,
+        patientRes,
+        appointmentRes,
+        invoiceRes,
+        paymentRes,
       ] = await Promise.all([
         doctorAPI.getAll(),
         patientAPI.getAll(),
         appointmentAPI.getAll(),
         billingAPI.getInvoices(),
+        billingAPI.getPayments(),
       ]);
 
-      const doctorCount =
-        doctors.data.count ??
-        doctors.data.results?.length ??
-        doctors.data.length ??
-        0;
+      const doctorList =
+        doctorRes.data.results ??
+        doctorRes.data ??
+        [];
 
-      const patientCount =
-        patients.data.count ??
-        patients.data.results?.length ??
-        patients.data.length ??
-        0;
+      const patientList =
+        patientRes.data.results ??
+        patientRes.data ??
+        [];
 
-      const appointmentCount =
-        appointments.data.count ??
-        appointments.data.results?.length ??
-        appointments.data.length ??
-        0;
+      const appointmentList =
+        appointmentRes.data.results ??
+        appointmentRes.data ??
+        [];
 
       const invoiceList =
-        invoices.data.results ??
-        invoices.data ??
+        invoiceRes.data.results ??
+        invoiceRes.data ??
+        [];
+
+      const paymentList =
+        paymentRes.data.results ??
+        paymentRes.data ??
         [];
 
       const revenue = invoiceList.reduce(
-        (sum, invoice) => sum + Number(invoice.amount_paid),
+        (sum, invoice) => sum + Number(invoice.amount_paid || 0),
         0
       );
 
       setStats({
-        doctors: doctorCount,
-        patients: patientCount,
-        appointments: appointmentCount,
+        doctors: doctorRes.data.count ?? doctorList.length,
+        patients: patientRes.data.count ?? patientList.length,
+        appointments:
+          appointmentRes.data.count ??
+          appointmentList.length,
         revenue,
       });
-    } catch (err) {
-      console.log(err);
+
+      setAppointments(appointmentList);
+      setPatients(patientList);
+      setInvoices(invoiceList);
+      setPayments(paymentList);
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
   };
-  setAppointments(
-  appointments.data.results ??
-  appointments.data ??
-  []
-);
 
-setInvoices(
-  invoiceList
-);
-setPatients(
-    patientsResponse.data.results ??
-    patientsResponse.data ??
-    []
-);
-
-setPayments(
-    paymentsResponse.data.results ??
-    paymentsResponse.data ??
-    []
-);
-
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        <div className="text-xl font-semibold">
+          Loading Dashboard...
+        </div>
       </div>
     );
+  }
 
   return (
-    <div className="p-8 bg-slate-100 min-h-screen">
+    <div className="bg-slate-100 min-h-screen p-8">
 
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-4xl font-bold text-gray-800">
           Hospital Dashboard
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Welcome back Admin 👋
+          Welcome back, Administrator 👋
         </p>
       </div>
 
-      <StatsCards stats={stats} />
+      {/* Statistics */}
+      {/* <StatsCards stats={stats} /> */}
 
-      <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-6">
-
+      Charts
+      {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
         <RevenueChart invoices={invoices} />
-
-        <div className="bg-white rounded-2xl shadow-lg h-96 flex items-center justify-center">
-          Appointment Chart
-        </div>
-
-      </div>
-
-      <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-6">
-
         <AppointmentChart appointments={appointments} />
+      </div> */}
 
+      {/* Recent Data */}
+      {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
         <RecentAppointments appointments={appointments} />
+        <RecentPatients patients={patients} />
+      </div> */}
 
-<RecentPatients patients={patients} />
-
-<RecentPayments payments={payments} />
-
-<NotificationPanel />
-
-      </div>
+      {/* Payments + Notifications */}
+      {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+        <RecentPayments payments={payments} />
+        <NotificationPanel />
+      </div> */}
 
     </div>
   );
