@@ -1,4 +1,10 @@
 import { useEffect, useState } from "react";
+import {
+  doctorAPI,
+  patientAPI,
+  appointmentAPI,
+  billingAPI,
+} from "../../services/api";
 
 import StatsCards from "../../components/dashboard/StatsCards";
 import RevenueChart from "../../components/dashboard/RevenueChart";
@@ -7,13 +13,7 @@ import RecentAppointments from "../../components/dashboard/RecentAppointments";
 import RecentPatients from "../../components/dashboard/RecentPatients";
 import RecentPayments from "../../components/dashboard/RecentPayments";
 import NotificationPanel from "../../components/dashboard/NotificationPanel";
-
-import {
-  doctorAPI,
-  patientAPI,
-  appointmentAPI,
-  billingAPI,
-} from "../../services/api";
+import QuickActions from "../../components/dashboard/QuickActions";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -30,11 +30,19 @@ const Dashboard = () => {
   const [payments, setPayments] = useState([]);
   const [invoices, setInvoices] = useState([]);
 
+  const getList = (response) => {
+    if (!response?.data) return [];
+    if (Array.isArray(response.data)) return response.data;
+    return response.data.results || [];
+  };
+
   useEffect(() => {
     loadDashboard();
   }, []);
 
   const loadDashboard = async () => {
+    setLoading(true);
+
     try {
       const [
         doctorRes,
@@ -50,42 +58,22 @@ const Dashboard = () => {
         billingAPI.getPayments(),
       ]);
 
-      const doctorList =
-        doctorRes.data.results ??
-        doctorRes.data ??
-        [];
-
-      const patientList =
-        patientRes.data.results ??
-        patientRes.data ??
-        [];
-
-      const appointmentList =
-        appointmentRes.data.results ??
-        appointmentRes.data ??
-        [];
-
-      const invoiceList =
-        invoiceRes.data.results ??
-        invoiceRes.data ??
-        [];
-
-      const paymentList =
-        paymentRes.data.results ??
-        paymentRes.data ??
-        [];
+      const doctorList = getList(doctorRes);
+      const patientList = getList(patientRes);
+      const appointmentList = getList(appointmentRes);
+      const invoiceList = getList(invoiceRes);
+      const paymentList = getList(paymentRes);
 
       const revenue = invoiceList.reduce(
-        (sum, invoice) => sum + Number(invoice.amount_paid || 0),
+        (sum, item) => sum + Number(item.amount_paid || 0),
         0
       );
 
       setStats({
-        doctors: doctorRes.data.count ?? doctorList.length,
-        patients: patientRes.data.count ?? patientList.length,
+        doctors: doctorRes.data?.count ?? doctorList.length,
+        patients: patientRes.data?.count ?? patientList.length,
         appointments:
-          appointmentRes.data.count ??
-          appointmentList.length,
+          appointmentRes.data?.count ?? appointmentList.length,
         revenue,
       });
 
@@ -93,8 +81,8 @@ const Dashboard = () => {
       setPatients(patientList);
       setInvoices(invoiceList);
       setPayments(paymentList);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error("Dashboard Error:", err);
     } finally {
       setLoading(false);
     }
@@ -102,46 +90,75 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-xl font-semibold">
-          Loading Dashboard...
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="bg-white rounded-xl shadow-lg px-8 py-6">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 font-medium">
+            Loading Dashboard...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-100 min-h-screen p-8">
+    <div className="min-h-screen bg-slate-100 p-6">
 
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
-          Hospital Dashboard
-        </h1>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
 
-        <p className="text-gray-500 mt-2">
-          Welcome back, Administrator 👋
-        </p>
+        <div>
+          <h1 className="text-4xl font-bold text-gray-800">
+            Hospital Dashboard
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+            Welcome back Administrator 👋
+          </p>
+        </div>
+
+        <button
+          onClick={loadDashboard}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow"
+        >
+          Refresh
+        </button>
+
       </div>
 
       {/* Statistics */}
-      {/* <StatsCards stats={stats} /> */}
+      <StatsCards stats={stats} />
 
-      Charts vanno
+      {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+
         <RevenueChart invoices={invoices} />
+
         <AppointmentChart appointments={appointments} />
+
       </div>
 
-      {/* Recent Data */}
+      {/* Quick Actions */}
+      <div className="mt-8">
+        <QuickActions />
+      </div>
+
+      {/* Tables */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+
         <RecentAppointments appointments={appointments} />
+
         <RecentPatients patients={patients} />
+
       </div>
 
       {/* Payments + Notifications */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+
         <RecentPayments payments={payments} />
+
         <NotificationPanel />
+
       </div>
 
     </div>
