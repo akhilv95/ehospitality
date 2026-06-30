@@ -1,94 +1,66 @@
 import {
   UserGroupIcon,
-  UsersIcon,
+  UserIcon,
   CalendarDaysIcon,
   CurrencyRupeeIcon,
 } from "@heroicons/react/24/outline";
-
-const StatCard = ({
-  title,
-  value,
-  icon,
-  color,
-  bgColor,
-  borderColor,
-}) => {
-  return (
-    <div
-      className={`bg-white rounded-2xl shadow-md border-l-4 ${borderColor} p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-    >
-      <div className="flex justify-between items-center">
-
-        <div>
-          <p className="text-gray-500 text-sm font-medium">
-            {title}
-          </p>
-
-          <h2 className="text-3xl font-bold mt-2 text-gray-800">
-            {value}
-          </h2>
-        </div>
-
-        <div
-          className={`${bgColor} ${color} p-4 rounded-2xl`}
-        >
-          {icon}
-        </div>
-
-      </div>
-    </div>
-  );
-};
 
 const StatsCards = ({ stats }) => {
   const cards = [
     {
       title: "Doctors",
-      value: stats.doctors,
-      icon: <UserGroupIcon className="w-8 h-8" />,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
-      borderColor: "border-blue-500",
+      value: stats?.doctors || 0,
+      color: "bg-blue-600",
+      icon: UserIcon,
     },
     {
       title: "Patients",
-      value: stats.patients,
-      icon: <UsersIcon className="w-8 h-8" />,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
-      borderColor: "border-green-500",
+      value: stats?.patients || 0,
+      color: "bg-green-600",
+      icon: UserGroupIcon,
     },
     {
       title: "Appointments",
-      value: stats.appointments,
-      icon: <CalendarDaysIcon className="w-8 h-8" />,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-100",
-      borderColor: "border-yellow-500",
+      value: stats?.appointments || 0,
+      color: "bg-orange-500",
+      icon: CalendarDaysIcon,
     },
     {
       title: "Revenue",
-      value: `₹${Number(stats.revenue).toLocaleString()}`,
-      icon: <CurrencyRupeeIcon className="w-8 h-8" />,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
-      borderColor: "border-purple-500",
+      value: `₹${Number(stats?.revenue || 0).toLocaleString()}`,
+      color: "bg-purple-600",
+      icon: CurrencyRupeeIcon,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-      {cards.map((card, index) => (
-        <StatCard
-          key={index}
-          title={card.title}
-          value={card.value}
-          icon={card.icon}
-          color={card.color}
-          bgColor={card.bgColor}
-          borderColor={card.borderColor}
-        />
-      ))}
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      {cards.map((card) => {
+        const Icon = card.icon;
+
+        return (
+          <div
+            key={card.title}
+            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">{card.title}</p>
+
+                <h2 className="text-3xl font-bold mt-2">
+                  {card.value}
+                </h2>
+              </div>
+
+              <div
+                className={`${card.color} h-14 w-14 rounded-xl flex items-center justify-center`}
+              >
+                <Icon className="w-8 h-8 text-white" />
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

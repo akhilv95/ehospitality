@@ -68,6 +68,12 @@ const Dashboard = () => {
         (sum, item) => sum + Number(item.amount_paid || 0),
         0
       );
+      console.log({
+  doctors: doctorRes.data,
+  patients: patientRes.data,
+  appointments: appointmentRes.data,
+  invoices: invoiceRes.data,
+});
 
       setStats({
         doctors: doctorRes.data?.count ?? doctorList.length,
