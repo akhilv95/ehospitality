@@ -21,9 +21,6 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const redirectPath = user.role === 'patient' ? '/patient' : 
                          user.role === 'doctor' ? '/doctor' : '/admin';
     return <Navigate to={redirectPath} replace />;
-    console.log("User:", user);
-console.log("Role:", user?.role);
-console.log("Allowed Roles:", allowedRoles);
   }
 
   return children;

@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
+import RevenueChart from "../../components/dashboard/RevenueChart";
+import AppointmentChart from "../../components/dashboard/AppointmentChart";
+import RecentAppointments from "../../components/dashboard/RecentAppointments";
+import RecentPatients from "../../components/dashboard/RecentPatients";
+import RecentPayments from "../../components/dashboard/RecentPayments";
+import NotificationPanel from "../../components/dashboard/NotificationPanel";
+import StatsCards from "../../components/dashboard/StatsCards";
+
 import {
   doctorAPI,
   patientAPI,
   appointmentAPI,
   billingAPI,
 } from "../../services/api";
-import toast from "react-hot-toast";
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [patients,setPatients]=useState([]);
+  const [payments,setPayments]=useState([]);
+
   const [stats, setStats] = useState({
     doctors: 0,
     patients: 0,
@@ -15,22 +28,17 @@ const Dashboard = () => {
     revenue: 0,
   });
 
-  const [recentAppointments, setRecentAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     loadDashboard();
   }, []);
 
   const loadDashboard = async () => {
     try {
-      setLoading(true);
-
       const [
-        doctorRes,
-        patientRes,
-        appointmentRes,
-        invoiceRes,
+        doctors,
+        patients,
+        appointments,
+        invoices,
       ] = await Promise.all([
         doctorAPI.getAll(),
         patientAPI.getAll(),
@@ -38,195 +46,110 @@ const Dashboard = () => {
         billingAPI.getInvoices(),
       ]);
 
-      const doctors = doctorRes.data.results || doctorRes.data || [];
-      const patients = patientRes.data.results || patientRes.data || [];
-      const appointments =
-        appointmentRes.data.results || appointmentRes.data || [];
-      const invoices =
-        invoiceRes.data.results || invoiceRes.data || [];
+      const doctorCount =
+        doctors.data.count ??
+        doctors.data.results?.length ??
+        doctors.data.length ??
+        0;
 
-      let revenue = 0;
+      const patientCount =
+        patients.data.count ??
+        patients.data.results?.length ??
+        patients.data.length ??
+        0;
 
-      invoices.forEach((invoice) => {
-        revenue += Number(invoice.amount_paid || 0);
-      });
+      const appointmentCount =
+        appointments.data.count ??
+        appointments.data.results?.length ??
+        appointments.data.length ??
+        0;
+
+      const invoiceList =
+        invoices.data.results ??
+        invoices.data ??
+        [];
+
+      const revenue = invoiceList.reduce(
+        (sum, invoice) => sum + Number(invoice.amount_paid),
+        0
+      );
 
       setStats({
-        doctors: doctors.length,
-        patients: patients.length,
-        appointments: appointments.length,
+        doctors: doctorCount,
+        patients: patientCount,
+        appointments: appointmentCount,
         revenue,
       });
-
-      setRecentAppointments(appointments.slice(0, 5));
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to load dashboard");
+    } catch (err) {
+      console.log(err);
     } finally {
       setLoading(false);
     }
   };
+  setAppointments(
+  appointments.data.results ??
+  appointments.data ??
+  []
+);
 
-  if (loading) {
+setInvoices(
+  invoiceList
+);
+setPatients(
+    patientsResponse.data.results ??
+    patientsResponse.data ??
+    []
+);
+
+setPayments(
+    paymentsResponse.data.results ??
+    paymentsResponse.data ??
+    []
+);
+
+  if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
+      <div className="flex justify-center items-center h-screen">
+        Loading...
       </div>
     );
-  }
 
   return (
-    <div className="space-y-8">
+    <div className="p-8 bg-slate-100 min-h-screen">
 
-      <div>
-        <h1 className="text-3xl font-bold">
-          Admin Dashboard
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold">
+          Hospital Dashboard
         </h1>
 
-        <p className="text-gray-500">
-          Welcome to the Hospital Management System
+        <p className="text-gray-500 mt-2">
+          Welcome back Admin 👋
         </p>
       </div>
 
-      {/* Statistics */}
+      <StatsCards stats={stats} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-        <div className="bg-white shadow rounded-xl p-6">
-          <h3 className="text-gray-500">
-            Doctors
-          </h3>
+        <RevenueChart invoices={invoices} />
 
-          <h2 className="text-4xl font-bold text-blue-600 mt-3">
-            {stats.doctors}
-          </h2>
-        </div>
-
-        <div className="bg-white shadow rounded-xl p-6">
-          <h3 className="text-gray-500">
-            Patients
-          </h3>
-
-          <h2 className="text-4xl font-bold text-green-600 mt-3">
-            {stats.patients}
-          </h2>
-        </div>
-
-        <div className="bg-white shadow rounded-xl p-6">
-          <h3 className="text-gray-500">
-            Appointments
-          </h3>
-
-          <h2 className="text-4xl font-bold text-purple-600 mt-3">
-            {stats.appointments}
-          </h2>
-        </div>
-
-        <div className="bg-white shadow rounded-xl p-6">
-          <h3 className="text-gray-500">
-            Revenue
-          </h3>
-
-          <h2 className="text-4xl font-bold text-red-600 mt-3">
-            ₹ {stats.revenue}
-          </h2>
+        <div className="bg-white rounded-2xl shadow-lg h-96 flex items-center justify-center">
+          Appointment Chart
         </div>
 
       </div>
 
-      {/* Recent Appointments */}
+      <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-      <div className="bg-white shadow rounded-xl p-6">
+        <AppointmentChart appointments={appointments} />
 
-        <h2 className="text-2xl font-bold mb-5">
-          Recent Appointments
-        </h2>
+        <RecentAppointments appointments={appointments} />
 
-        {recentAppointments.length === 0 ? (
-          <p>No appointments found.</p>
-        ) : (
-          <table className="w-full">
+<RecentPatients patients={patients} />
 
-            <thead>
+<RecentPayments payments={payments} />
 
-              <tr className="border-b">
-
-                <th className="text-left py-3">
-                  Patient
-                </th>
-
-                <th className="text-left">
-                  Doctor
-                </th>
-
-                <th className="text-left">
-                  Date
-                </th>
-
-                <th className="text-left">
-                  Time
-                </th>
-
-                <th className="text-left">
-                  Status
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {recentAppointments.map((appointment) => (
-
-                <tr
-                  key={appointment.id}
-                  className="border-b hover:bg-gray-50"
-                >
-
-                  <td className="py-3">
-                    {appointment.patient_detail?.user?.full_name}
-                  </td>
-
-                  <td>
-                    Dr. {appointment.doctor_detail?.user?.full_name}
-                  </td>
-
-                  <td>
-                    {appointment.date}
-                  </td>
-
-                  <td>
-                    {appointment.time}
-                  </td>
-
-                  <td>
-
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm
-                      ${
-                        appointment.status === "completed"
-                          ? "bg-green-100 text-green-700"
-                          : appointment.status === "confirmed"
-                          ? "bg-blue-100 text-blue-700"
-                          : appointment.status === "cancelled"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {appointment.status_display}
-                    </span>
-
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-        )}
+<NotificationPanel />
 
       </div>
 

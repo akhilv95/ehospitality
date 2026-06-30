@@ -1,0 +1,5 @@
+postgresql://neondb_owner:npg_V1fHJwCmcZ0W@ep-steep-waterfall-atbeme8k.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+
+
+secret_key 37b82f818e14d2c593e9e99e1ae3868c

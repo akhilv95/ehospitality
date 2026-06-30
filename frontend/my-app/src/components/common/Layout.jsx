@@ -13,7 +13,7 @@ import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
-  UserCircleIcon,UserIcon
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 
 const Layout = ({ children }) => {
@@ -29,12 +29,6 @@ const Layout = ({ children }) => {
 
   const patientNavigation = [
     { name: 'Dashboard', href: '/patient', icon: HomeIcon },
-    {
-    name: "Profile",
-    href: "/patient/profile",
-    icon:UserIcon
-    
-},
     { name: 'Appointments', href: '/patient/appointments', icon: CalendarIcon },
     { name: 'Medical Records', href: '/patient/records', icon: DocumentTextIcon },
     { name: 'Prescriptions', href: '/patient/prescriptions', icon: ClipboardDocumentListIcon },
@@ -47,14 +41,12 @@ const Layout = ({ children }) => {
     { name: 'Appointments', href: '/doctor/appointments', icon: CalendarIcon },
     { name: 'Patients', href: '/doctor/patients', icon: UserGroupIcon },
     { name: 'Prescriptions', href: '/doctor/prescriptions', icon: ClipboardDocumentListIcon },
-    {name: "Medical Records",href: "/doctor/medical-records",icon: DocumentTextIcon
-},
     { name: 'Schedule', href: '/doctor/schedule', icon: CalendarIcon },
   ];
 
   const adminNavigation = [
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Doctors', href: '/admin/doctors', icon: UserGroupIcon },
+    { name: 'Users', href: '/admin/users', icon: UserGroupIcon },
     { name: 'Appointments', href: '/admin/appointments', icon: CalendarIcon },
     { name: 'Facilities', href: '/admin/facilities', icon: BuildingOfficeIcon },
     { name: 'Billing', href: '/admin/billing', icon: CreditCardIcon },
