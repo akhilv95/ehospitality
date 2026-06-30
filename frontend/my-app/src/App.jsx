@@ -28,6 +28,7 @@ import DoctorSchedule from './pages/doctor/Schedule';
 //admin
 import Dashboard from './pages/admin/Dashboard';
 import Doctors from './pages/admin/Doctors';
+import Patients from "./pages/admin/Patients";
 
 
 
@@ -247,6 +248,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+    path="/admin/patients"
+    element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+            <Patients />
+        </ProtectedRoute>
+    }
+/>
             {/* <Route
   path="/admin"
   element={

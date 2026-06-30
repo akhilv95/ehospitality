@@ -47,6 +47,11 @@ const Layout = ({ children }) => {
   const adminNavigation = [
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
     { name: 'Users', href: '/admin/users', icon: UserGroupIcon },
+    {
+    name:"Patients",
+    path:"/admin/patients",
+    icon:"UserGroupIcon"
+},
     { name: 'Appointments', href: '/admin/appointments', icon: CalendarIcon },
     { name: 'Facilities', href: '/admin/facilities', icon: BuildingOfficeIcon },
     { name: 'Billing', href: '/admin/billing', icon: CreditCardIcon },
