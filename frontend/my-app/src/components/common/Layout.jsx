@@ -50,7 +50,7 @@ const Layout = ({ children }) => {
     { name:'Patients',href:'/admin/patients',icon:UserGroupIcon},
     { name: 'Appointments', href: '/admin/appointments', icon: CalendarIcon },
     { name:'Analytics',href:'/admin/analytics',icon:Bars3Icon},
-    { name: 'Billing', href: '/admin/billing', icon: CreditCardIcon },
+    { name: 'reports', href: '/admin/reports', icon: DocumentTextIcon },
     { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
   ];
 
