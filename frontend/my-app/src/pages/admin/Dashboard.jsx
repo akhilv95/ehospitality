@@ -127,7 +127,23 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics */}
-      <StatsCards stats={stats} />
+     <div className="grid grid-cols-4 gap-4 mb-8">
+  <div className="bg-red-500 text-white p-6 rounded">
+    Doctors: {stats.doctors}
+  </div>
+
+  <div className="bg-green-500 text-white p-6 rounded">
+    Patients: {stats.patients}
+  </div>
+
+  <div className="bg-blue-500 text-white p-6 rounded">
+    Appointments: {stats.appointments}
+  </div>
+
+  <div className="bg-purple-500 text-white p-6 rounded">
+    Revenue: ₹{stats.revenue}
+  </div>
+</div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
