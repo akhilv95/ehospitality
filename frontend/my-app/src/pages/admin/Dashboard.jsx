@@ -124,7 +124,7 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics */}
-      <StatsCards stats={stats} />
+      {/* <StatsCards stats={stats} /> */}
 
       Charts vanno
       {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
