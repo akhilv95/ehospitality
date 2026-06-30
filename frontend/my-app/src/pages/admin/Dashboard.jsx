@@ -160,10 +160,7 @@ const Dashboard = () => {
 
       </div>
 
-      {/* Quick Actions */}
-      <div className="mt-8">
-        <QuickActions />
-      </div>
+     
 
       {/* Tables */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
