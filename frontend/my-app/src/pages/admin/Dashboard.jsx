@@ -13,7 +13,7 @@ import RecentAppointments from "../../components/dashboard/RecentAppointments";
 import RecentPatients from "../../components/dashboard/RecentPatients";
 import RecentPayments from "../../components/dashboard/RecentPayments";
 import NotificationPanel from "../../components/dashboard/NotificationPanel";
-import QuickActions from "../../components/dashboard/QuickActions";
+//import QuickActions from "../../components/dashboard/QuickActions";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
