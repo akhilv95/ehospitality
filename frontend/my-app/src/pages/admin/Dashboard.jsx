@@ -124,13 +124,13 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics */}
-      {/* <StatsCards stats={stats} /> */}
+      <StatsCards stats={stats} />
 
       Charts
-      {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
         <RevenueChart invoices={invoices} />
         <AppointmentChart appointments={appointments} />
-      </div> */}
+      </div>
 
       {/* Recent Data */}
       {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
