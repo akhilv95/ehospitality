@@ -133,10 +133,10 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Data */}
-      {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
         <RecentAppointments appointments={appointments} />
         <RecentPatients patients={patients} />
-      </div> */}
+      </div>
 
       {/* Payments + Notifications */}
       {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
