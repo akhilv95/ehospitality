@@ -34,7 +34,12 @@ class MedicalRecordListView(generics.ListAPIView):
             print("Doctor:", doctor.id)
             print("Patient IDs:", patient_ids)
 
-            queryset = queryset.filter(patient_id__in=patient_ids).distinct()
+            queryset = queryset.filter(
+    doctor=doctor
+).select_related(
+    "patient__user",
+    "doctor__user"
+)
 
             print("Medical Record Count:", queryset.count())
 
@@ -64,7 +69,12 @@ class MedicalRecordDetailView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = MedicalRecord.objects.select_related('patient__user', 'doctor__user')
+        queryset = queryset.filter(
+    doctor=doctor
+).select_related(
+    "patient__user",
+    "doctor__user"
+)
         
         if user.is_patient:
             return queryset.filter(patient__user=user, is_confidential=False)
