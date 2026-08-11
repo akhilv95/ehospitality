@@ -11,4 +11,7 @@ urlpatterns = [
     path('health-resources/<int:pk>/', views.HealthEducationResourceDetailView.as_view(), name='health-resource-detail'),
     path('health-resources/admin/', views.HealthEducationResourceAdminView.as_view(), name='health-resource-admin'),
     path('health-resources/admin/<int:pk>/', views.HealthEducationResourceAdminDetailView.as_view(), name='health-resource-admin-detail'),
+    
+
+
 ]

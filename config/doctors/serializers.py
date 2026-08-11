@@ -2,7 +2,6 @@ from rest_framework import serializers
 from accounts.serializers import UserSerializer
 from .models import Doctor, DoctorSchedule, Specialization
 
-
 class SpecializationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Specialization
@@ -82,6 +81,10 @@ class AdminDoctorCreateSerializer(serializers.Serializer):
         max_digits=10,
         decimal_places=2
     )
+    bio = serializers.CharField(
+    required=False,
+    allow_blank=True
+)
 
     specializations = serializers.ListField(
         child=serializers.IntegerField(),
@@ -106,8 +109,219 @@ class AdminDoctorCreateSerializer(serializers.Serializer):
             qualifications=validated_data.get("qualifications", ""),
             experience_years=validated_data["experience_years"],
             consultation_fee=validated_data["consultation_fee"],
+             bio=validated_data.get(
+        "bio",
+        ""
+    ),
         )
 
         doctor.specializations.set(specializations)
 
         return doctor
+
+class AdminDoctorSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.CharField(
+        source='user.first_name',
+        required=False
+    )
+
+    last_name = serializers.CharField(
+        source='user.last_name',
+        required=False
+    )
+
+    email = serializers.EmailField(
+        source='user.email',
+        required=False
+    )
+
+    phone = serializers.CharField(
+        source='user.phone',
+        required=False,
+        allow_blank=True
+    )
+
+    full_name = serializers.SerializerMethodField()
+
+    specialization_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False
+    )
+
+    specializations = SpecializationSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Doctor
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'full_name',
+            'license_number',
+            'qualifications',
+            'experience_years',
+            'consultation_fee',
+            'bio',
+            'is_available',
+            'specializations',
+            'specialization_ids',
+            'created_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'full_name',
+            'specializations',
+            'created_at',
+        ]
+
+    def get_full_name(self, obj):
+        return f"Dr. {obj.user.get_full_name()}"
+
+    def update(self, instance, validated_data):
+
+        user_data = validated_data.pop(
+            'user',
+            {}
+        )
+
+        specialization_ids = validated_data.pop(
+            'specialization_ids',
+            None
+        )
+
+        # -----------------------
+        # Update User
+        # -----------------------
+
+        user = instance.user
+
+        if 'first_name' in user_data:
+            user.first_name = user_data['first_name']
+
+        if 'last_name' in user_data:
+            user.last_name = user_data['last_name']
+
+        if 'email' in user_data:
+            user.email = user_data['email']
+
+        if 'phone' in user_data:
+            user.phone = user_data['phone']
+
+        user.save()
+
+        # -----------------------
+        # Update Doctor
+        # -----------------------
+
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+
+        instance.save()
+
+        # -----------------------
+        # Update Specializations
+        # -----------------------
+
+        if specialization_ids is not None:
+            specializations = Specialization.objects.filter(
+                id__in=specialization_ids
+            )
+
+            instance.specializations.set(
+                specializations
+            )
+
+        return instance
+
+class DoctorAdminUpdateSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.CharField(
+        source="user.first_name",
+        required=False
+    )
+
+    last_name = serializers.CharField(
+        source="user.last_name",
+        required=False
+    )
+
+    email = serializers.EmailField(
+        source="user.email",
+        required=False
+    )
+
+    phone = serializers.CharField(
+        source="user.phone",
+        required=False,
+        allow_blank=True
+    )
+
+    specialization_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = Doctor
+
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "license_number",
+            "qualifications",
+            "experience_years",
+            "consultation_fee",
+            "bio",
+            "is_available",
+            "specialization_ids",
+        ]
+
+    def update(self, instance, validated_data):
+
+        user_data = validated_data.pop(
+            "user",
+            {}
+        )
+
+        specialization_ids = validated_data.pop(
+            "specialization_ids",
+            None
+        )
+
+        # Update Doctor
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        # Update User
+        user = instance.user
+
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+
+        user.save()
+
+        # Update specializations
+        if specialization_ids is not None:
+
+            specializations = Specialization.objects.filter(
+                id__in=specialization_ids
+            )
+
+            instance.specializations.set(
+                specializations
+            )
+
+        return instance

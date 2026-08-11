@@ -9,7 +9,10 @@ from .serializers import (
     DoctorSerializer, DoctorCreateUpdateSerializer,
     DoctorScheduleSerializer, SpecializationSerializer
 )
-from.serializers import AdminDoctorCreateSerializer
+from .serializers import (
+    AdminDoctorCreateSerializer,
+    AdminDoctorSerializer,
+)
 
 class DoctorListView(generics.ListAPIView):
     queryset = Doctor.objects.select_related('user').prefetch_related('specializations', 'schedules').filter(is_available=True)
@@ -193,4 +196,51 @@ def get_available_slots(request, doctor_id):
     })
 class AdminDoctorCreateView(generics.CreateAPIView):
     serializer_class = AdminDoctorCreateSerializer
+    permission_classes = [IsAdmin]
+class AdminDoctorDetailView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+    queryset = Doctor.objects.select_related(
+        'user'
+    ).prefetch_related(
+        'specializations',
+        'schedules'
+    )
+
+    serializer_class = AdminDoctorSerializer
+    permission_classes = [IsAdmin]
+
+    def destroy(
+        self,
+        request,
+        *args,
+        **kwargs
+    ):
+        doctor = self.get_object()
+
+        user = doctor.user
+
+        doctor.delete()
+
+        # Delete the associated login account
+        user.delete()
+
+        return Response(
+            {
+                "message":
+                "Doctor deleted successfully"
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )
+class AdminDoctorListView(generics.ListAPIView):
+
+    queryset = Doctor.objects.select_related(
+        'user'
+    ).prefetch_related(
+        'specializations',
+        'schedules'
+    )
+
+    serializer_class = AdminDoctorSerializer
+
     permission_classes = [IsAdmin]

@@ -101,22 +101,23 @@ class PatientMedicalHistoryView(generics.ListAPIView):
         patient_id = self.kwargs.get("patient_id")
 
         if self.request.user.is_doctor:
+
             doctor = Doctor.objects.get(user=self.request.user)
 
-            has_appointment = Appointment.objects.filter(
-            doctor=doctor,
-            patient_id=patient_id
-        ).exists()
-
-            if not has_appointment:
-                return MedicalRecord.objects.none()
-
         return MedicalRecord.objects.filter(
-            patient_id=patient_id
+        patient_id=patient_id,
+        doctor=doctor
     ).select_related(
         "patient__user",
         "doctor__user"
-    ).prefetch_related("lab_results")
+    )
+
+        return MedicalRecord.objects.filter(
+    patient_id=patient_id
+).select_related(
+    "patient__user",
+    "doctor__user"
+) 
 
 
 class LabResultCreateView(generics.CreateAPIView):

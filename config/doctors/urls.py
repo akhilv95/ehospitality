@@ -14,5 +14,16 @@ urlpatterns = [
     "admin/create/",
     views.AdminDoctorCreateView.as_view(),
     name="admin-create-doctor",
+    
+),
+path(
+    'admin/<int:pk>/',
+    views.AdminDoctorDetailView.as_view(),
+    name='admin-doctor-detail'
+),
+path(
+    'admin/',
+    views.AdminDoctorListView.as_view(),
+    name='admin-doctor-list'
 ),
 ]

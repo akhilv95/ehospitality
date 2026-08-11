@@ -5,8 +5,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from accounts.permissions import IsAdmin, IsPatient, IsOwnerOrAdmin, IsDoctorOrAdmin
 from .models import Patient, Allergy, HealthEducationResource
 from .serializers import (
-    PatientSerializer, PatientCreateUpdateSerializer,
-    AllergySerializer, HealthEducationResourceSerializer
+    PatientSerializer,
+    PatientCreateUpdateSerializer,
+    AdminPatientSerializer,
+    AllergySerializer,
+    HealthEducationResourceSerializer
 )
 
 
@@ -18,11 +21,43 @@ class PatientListView(generics.ListAPIView):
     search_fields = ['user__first_name', 'user__last_name', 'user__email']
 
 
-class PatientDetailView(generics.RetrieveAPIView):
-    queryset = Patient.objects.select_related('user').prefetch_related('allergies')
-    serializer_class = PatientSerializer
-    permission_classes = [IsDoctorOrAdmin | IsOwnerOrAdmin]
+class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Patient.objects.select_related(
+        'user'
+    ).prefetch_related('allergies')
 
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+
+        if self.request.user.is_admin:
+            return AdminPatientSerializer
+
+        if self.request.method in ['PUT', 'PATCH']:
+            return PatientCreateUpdateSerializer
+
+        return PatientSerializer
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        if user.is_admin:
+            return Patient.objects.select_related(
+                'user'
+            ).prefetch_related('allergies')
+
+        if user.is_doctor:
+            return Patient.objects.select_related(
+                'user'
+            ).prefetch_related('allergies')
+
+        if user.is_patient:
+            return Patient.objects.filter(
+                user=user
+            ).select_related('user')
+
+        return Patient.objects.none()
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = PatientSerializer
