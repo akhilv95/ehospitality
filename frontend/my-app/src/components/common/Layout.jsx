@@ -46,12 +46,12 @@ const Layout = ({ children }) => {
 
   const adminNavigation = [
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Users', href: '/admin/users', icon: UserGroupIcon },
+    { name: 'Doctors', href: '/admin/doctors', icon: UserGroupIcon },
     { name:'Patients',href:'/admin/patients',icon:UserGroupIcon},
     { name: 'Appointments', href: '/admin/appointments', icon: CalendarIcon },
     { name:'Analytics',href:'/admin/analytics',icon:Bars3Icon},
     { name: 'reports', href: '/admin/reports', icon: DocumentTextIcon },
-    { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
+    // { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
   ];
 
   const navigation = isPatient ? patientNavigation : isDoctor ? doctorNavigation : adminNavigation;

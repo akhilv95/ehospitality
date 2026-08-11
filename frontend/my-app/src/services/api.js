@@ -73,22 +73,78 @@ export const patientAPI = {
   addAllergy: (data) => api.post('/patients/allergies/', data),
   deleteAllergy: (id) => api.delete(`/patients/allergies/${id}/`),
   getHealthResources: (params) => api.get('/patients/health-resources/', { params }),
+getAll: (params) =>
+    api.get('/patients/', { params }),
+
+  getById: (id) =>
+    api.get(`/patients/${id}/`),
+
+  update: (id, data) =>
+    api.patch(`/patients/${id}/`, data),
+
+  delete: (id) =>
+    api.delete(`/patients/${id}/`),
 };
 
 // Doctor API
+// Doctor API
 export const doctorAPI = {
-  getAll: () => api.get("/doctors/"),
-  getAll: (params) => api.get('/doctors/', { params }),
-  getById: (id) => api.get(`/doctors/${id}/`),
-  getProfile: () => api.get('/doctors/profile/'),
-  updateProfile: (data) => api.patch('/doctors/profile/', data),
-  getSchedules: () => api.get('/doctors/schedules/'),
-  createSchedule: (data) => api.post('/doctors/schedules/', data),
-  updateSchedule: (id, data) => api.patch(`/doctors/schedules/${id}/`, data),
-  deleteSchedule: (id) => api.delete(`/doctors/schedules/${id}/`),
-  getAvailableSlots: (doctorId, date) => 
-    api.get(`/doctors/${doctorId}/available-slots/`, { params: { date } }),
-  getSpecializations: () => api.get('/doctors/specializations/'),
+  // Public / common
+  getAll: (params) =>
+    api.get('/doctors/', { params }),
+
+  getById: (id) =>
+    api.get(`/doctors/${id}/`),
+
+  // Doctor's own profile
+  getProfile: () =>
+    api.get('/doctors/profile/'),
+
+  updateProfile: (data) =>
+    api.patch('/doctors/profile/', data),
+
+  // Doctor schedules
+  getSchedules: () =>
+    api.get('/doctors/schedules/'),
+
+  createSchedule: (data) =>
+    api.post('/doctors/schedules/', data),
+
+  updateSchedule: (id, data) =>
+    api.patch(`/doctors/schedules/${id}/`, data),
+
+  deleteSchedule: (id) =>
+    api.delete(`/doctors/schedules/${id}/`),
+
+  // Available slots
+  getAvailableSlots: (doctorId, date) =>
+    api.get(
+      `/doctors/${doctorId}/available-slots/`,
+      { params: { date } }
+    ),
+
+  // Specializations
+  getSpecializations: () =>
+    api.get('/doctors/specializations/'),
+
+  // ==============================
+  // ADMIN DOCTOR MANAGEMENT
+  // ==============================
+
+  adminGetAll: (params) =>
+  api.get('/doctors/admin/', { params }),
+  
+  adminCreate: (data) =>
+    api.post('/doctors/admin/create/', data),
+
+  adminGetById: (id) =>
+    api.get(`/doctors/admin/${id}/`),
+
+  adminUpdate: (id, data) =>
+    api.patch(`/doctors/admin/${id}/`, data),
+
+  adminDelete: (id) =>
+    api.delete(`/doctors/admin/${id}/`),
 };
 
 // Appointment API

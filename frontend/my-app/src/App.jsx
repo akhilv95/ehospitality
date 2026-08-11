@@ -254,7 +254,9 @@ function App() {
     path="/admin/patients"
     element={
         <ProtectedRoute allowedRoles={["admin"]}>
+          <Layout>
             <Patients />
+            </Layout>
         </ProtectedRoute>
     }
 />
@@ -262,15 +264,20 @@ function App() {
   path="/admin/analytics"
   element={
     <ProtectedRoute allowedRoles={["admin"]}>
+
+      <Layout>
       <Analytics />
+      </Layout>
     </ProtectedRoute>
   }
 />
 <Route
-  path="/admin/analytics"
+  path="/admin/reports"
   element={
     <ProtectedRoute allowedRoles={["admin"]}>
+      <Layout>
       <Reports />
+      </Layout>
     </ProtectedRoute>
   }
 />
